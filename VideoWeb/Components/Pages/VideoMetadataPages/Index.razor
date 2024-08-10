@@ -1,0 +1,51 @@
+﻿@page "/videometadata"
+
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using VideoWeb.Models
+@inject IDbContextFactory<StorageBroker> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1 class="index-1">Video darsliklar</h1>
+
+<p>
+    <a href="videometadata/create">Video qo'shish</a>
+</p>
+
+<QuickGrid Class="table" Items="DbFactory.CreateDbContext().VideoMetadata">
+
+
+    <div class="video-list">
+        <TemplateColumn Context="videometadata">
+            <iframe class="video" width="400" height="200" src="@videometadata.Url"
+                    frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
+            </iframe>
+            <p>@videometadata.Title</p>
+            <p>@videometadata.Describtion</p>
+        </TemplateColumn>
+    </div>
+
+</QuickGrid>
+
+<style>
+    .index-1 {
+        margin-top: 5px;
+    }
+
+    .video-list {
+        margin-right: 1px;
+        margin-left: 100px;
+    }
+
+    .video {
+        margin-top: 10px;
+        margin-right: 0px;
+        margin-left: 200px:
+    }
+
+    TemplateColumn {
+        margin-left: 100px;
+    }
+</style>

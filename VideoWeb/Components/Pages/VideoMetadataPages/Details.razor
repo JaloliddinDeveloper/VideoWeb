@@ -1,0 +1,51 @@
+﻿@page "/videometadata/details"
+
+@using Microsoft.EntityFrameworkCore
+@using VideoWeb.Models
+@inject IDbContextFactory<StorageBroker> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h4>VideoMetadata</h4>
+    <hr />
+    @if (videometadata is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Title</dt>
+            <dd class="col-sm-10">@videometadata.Title</dd>
+            <dt class="col-sm-2">Describtion</dt>
+            <dd class="col-sm-10">@videometadata.Describtion</dd>
+            <dt class="col-sm-2">Url</dt>
+            <dd class="col-sm-10">@videometadata.Url</dd>
+        </dl>
+        <div>
+            <a href="@($"/videometadata/edit?id={videometadata.Id}")">Edit</a> |
+            <a href="@($"/videometadata")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    VideoMetadata? videometadata;
+
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        videometadata = await context.VideoMetadata.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (videometadata is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

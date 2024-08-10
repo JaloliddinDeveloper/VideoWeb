@@ -1,0 +1,100 @@
+﻿@page "/VideoMetadata/edit"
+
+@using Microsoft.EntityFrameworkCore
+@using VideoWeb.Models
+@inject IDbContextFactory<StorageBroker> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h4>VideoMetadata</h4>
+<hr />
+@if (VideoMetadata is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="VideoMetadata" OnValidSubmit="UpdateVideoMetadata" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <input type="hidden" name="VideoMetadata.Id" value="@VideoMetadata.Id" />
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title:</label>
+                    <InputText id="title" @bind-Value="VideoMetadata.Title" class="form-control" />
+                    <ValidationMessage For="() => VideoMetadata.Title" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="describtion" class="form-label">Describtion:</label>
+                    <InputText id="describtion" @bind-Value="VideoMetadata.Describtion" class="form-control" />
+                    <ValidationMessage For="() => VideoMetadata.Describtion" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="url" class="form-label">Url:</label>
+                    <InputText id="url" @bind-Value="VideoMetadata.Url" class="form-control" />
+                    <ValidationMessage For="() => VideoMetadata.Url" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/videometadata">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    public VideoMetadata? VideoMetadata { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        VideoMetadata ??= await context.VideoMetadata.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (VideoMetadata is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see https://aka.ms/RazorPagesCRUD.
+    public async Task UpdateVideoMetadata()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(VideoMetadata!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!VideoMetadataExists(VideoMetadata!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/videometadata");
+    }
+
+    bool VideoMetadataExists(int id)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.VideoMetadata.Any(e => e.Id == id);
+    }
+}

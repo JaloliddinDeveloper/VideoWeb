@@ -1,0 +1,53 @@
+﻿@page "/videometadata/create"
+
+@using Microsoft.EntityFrameworkCore
+@using VideoWeb.Models
+@inject IDbContextFactory<StorageBroker> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h4>VideoMetadata</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="VideoMetadata" OnValidSubmit="AddVideoMetadata" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+            <div class="mb-3">
+                <label for="title" class="form-label">Title:</label> 
+                <InputText id="title" @bind-Value="VideoMetadata.Title" class="form-control" /> 
+                <ValidationMessage For="() => VideoMetadata.Title" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="describtion" class="form-label">Describtion:</label> 
+                <InputText id="describtion" @bind-Value="VideoMetadata.Describtion" class="form-control" /> 
+                <ValidationMessage For="() => VideoMetadata.Describtion" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="url" class="form-label">Url:</label> 
+                <InputText id="url" @bind-Value="VideoMetadata.Url" class="form-control" /> 
+                <ValidationMessage For="() => VideoMetadata.Url" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Add</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/videometadata">Back to List</a>
+</div>
+
+@code {
+
+    [SupplyParameterFromForm]
+    public VideoMetadata VideoMetadata { get; set; } = new();
+
+    public async Task AddVideoMetadata()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.VideoMetadata.Add(VideoMetadata);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/videometadata");
+    }
+}
